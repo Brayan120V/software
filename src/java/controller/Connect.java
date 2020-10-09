@@ -13,9 +13,10 @@ public class Connect {
         try {
             connection = (Connection) DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
+            System.out.println(e);
             System.out.println("No conectado");
         }
 
         return connection;
-    } 
+    }
 }

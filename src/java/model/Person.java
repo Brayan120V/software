@@ -1,7 +1,6 @@
 package model;
 
 import controller.Connect;
-import controller.PersonController;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,6 +19,18 @@ public class Person {
     Connect connect = new Connect();
 
     public Person() {
+    }
+
+    public Person(String name, int phone) {
+        this.name = name;
+        this.phone = phone;
+    }
+
+    public Person(int cardid, String name, String password, int phone) {
+        this.cardid = cardid;
+        this.name = name;
+        this.password = password;
+        this.phone = phone;
     }
 
     public Person(int cardid, String name, String password, int phone, String status) {
@@ -70,20 +81,29 @@ public class Person {
         this.status = status;
     }
 
-    public String create(Person person) throws Exception {
+    public String create(Person person, String role) throws Exception {
         String message = null;
         if (this.find(person.getCardid()) == null) {
             Statement statement = null;
+            String finalSql = "begin transaction; ";
             String sql = "insert into person "
                     + "values("
                     + person.getCardid() + ",'"
                     + person.getName() + "','"
                     + person.getPassword() + "',"
                     + person.getPhone() + ");";
+            if (role.equals("transporter")) {
+                finalSql += sql + "insert into transporter(person_cardid) values(" + person.getCardid() + "); ";
+            } else if (role.equals("client")) {
+                finalSql += sql + "insert into client values(" + person.getCardid() + "); ";
+            } else {
+                return message = "Erro";
+            }
+            finalSql += "commit;";
             try {
                 Connection connection = (Connection) connect.connect();
                 statement = connection.createStatement();
-                int res = statement.executeUpdate(sql);
+                int res = statement.executeUpdate(finalSql);
                 switch (res) {
                     case 0:
                         message = "Error";
@@ -173,7 +193,7 @@ public class Person {
         Statement statement = null;
         ResultSet result = null;
         Person person = null;
-        String sql = "select cardid, name, phone from person "
+        String sql = "select cardid, name, password, phone from person "
                 + "where cardid = " + cardid + ";";
         try {
             connection = (Connection) connect.connect();
@@ -187,13 +207,18 @@ public class Person {
         } else {
             try {
                 while (result.next()) {
-                    person = new Person(result.getInt("cardid"), result.getString("name"), null, result.getInt("phone"), null);
+                    person = new Person(result.getInt("cardid"), result.getString("name"), result.getString("password"), result.getInt("phone"), null);
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(PersonController.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex);
             }
         }
         statement.close();
         return person;
+    }
+
+    public boolean login(Person person) throws Exception {
+        Person dbPerson = this.find(person.getCardid());
+        return dbPerson.getCardid() == person.getCardid() && dbPerson.getPassword().equals(person.getPassword());
     }
 }

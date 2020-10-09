@@ -25,7 +25,7 @@ public class PersonTest {
     public void tearDown() {
     }
 
-    @Test
+    /*@Test
     public void testCreate() throws Exception {
         System.out.println("create");
         Person person = new Person(1057, "Daniel Roa", "123", 320, null);
@@ -35,13 +35,12 @@ public class PersonTest {
         System.out.println(expResult);
         System.out.println(result);
         assertEquals(expResult, result);
-    }
-
+    }*/
     @Test
     public void testRead() throws Exception {
         System.out.println("read");
-        int cardid = 1056;
         Person instance = new Person();
+        int cardid = 1056;
         Person expResult = new Person(1056, "Brayan Vargas", null, 312, null);
         Person result = instance.read(cardid);
         assertEquals(expResult.getCardid(), result.getCardid());
@@ -51,6 +50,7 @@ public class PersonTest {
         assertEquals(expResult.getStatus(), result.getStatus());
     }
 
+    /*
     @Test
     public void testUpdate() throws Exception {
         System.out.println("update");
@@ -70,5 +70,5 @@ public class PersonTest {
         String result = instance.inactivate(cardid);
         assertEquals(expResult, result);
     }
-
+     */
 }
