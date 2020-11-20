@@ -30,6 +30,10 @@ public class Space {
         this.id = id;
     }
 
+    public Space(Truck truck) {
+        this.truck = truck;
+    }
+
     public Space(int cityArrival, int cityDeparture, String dateArrival, String dateDeparture, float weight, float value, float volume, Truck truck) {
         this.cityArrival = cityArrival;
         this.cityDeparture = cityDeparture;
@@ -289,7 +293,7 @@ public class Space {
         return space;
     }
 
-    public ArrayList<Space> findArray() throws Exception {
+    public ArrayList<Space> findArray(int cardid) throws Exception {
         Connection connection = null;
         Statement statement = null;
         ResultSet result = null;
@@ -300,7 +304,7 @@ public class Space {
                 + "datearrival, datedeparture, weight, value, volume "
                 + "from space, truck, transporter, person "
                 + "where transporter_person_cardid = person_cardid "
-                + "and person_cardid = cardid "
+                + "and person_cardid = " + cardid + " "
                 + "and truck_licenseplate = licenseplate "
                 + "and space.status = 'active';";
 
@@ -342,4 +346,5 @@ public class Space {
         Person person = new Person(space.getTruck().getPerson().getName(), space.getTruck().getPerson().getPhone());
         return person;
     }
+
 }

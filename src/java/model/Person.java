@@ -21,6 +21,10 @@ public class Person {
     public Person() {
     }
 
+    public Person(int cardid) {
+        this.cardid = cardid;
+    }
+
     public Person(String name, int phone) {
         this.name = name;
         this.phone = phone;
@@ -83,8 +87,9 @@ public class Person {
 
     public String create(Person person, String role) throws Exception {
         String message = null;
+        Statement statement = null;
+        Connection connection = null;
         if (this.find(person.getCardid()) == null) {
-            Statement statement = null;
             String finalSql = "begin transaction; ";
             String sql = "insert into person "
                     + "values("
@@ -97,34 +102,33 @@ public class Person {
             } else if (role.equals("client")) {
                 finalSql += sql + "insert into client values(" + person.getCardid() + "); ";
             } else {
-                return message = "Erro";
+                return message = "Error creating transaction";
             }
             finalSql += "commit;";
             try {
-                Connection connection = (Connection) connect.connect();
+                connection = (Connection) connect.connect();
                 statement = connection.createStatement();
                 int res = statement.executeUpdate(finalSql);
-                switch (res) {
-                    case 0:
-                        message = "Error";
-                        break;
-                    case 1:
-                        message = "Success";
-                        break;
-                    default:
-                        break;
+
+                if (this.find(person.getCardid()) == null) {
+                    message = "Error saving person";
+                } else {
+                    message = "Success";
                 }
             } catch (SQLException ex) {
-                message = "Error";
+                message = "Error " + ex;
                 System.err.println(ex);
             }
             statement.close();
+            connection.close();
         }
+
         return message;
     }
 
     public Person read(int cardid) throws Exception {
         Person person = this.find(cardid);
+        System.out.println(person.password);
         return person;
     }
 
@@ -160,6 +164,7 @@ public class Person {
     }
 
     public String inactivate(int cardid) throws Exception {
+        System.out.println(cardid);
         String message = "";
         if (this.read(cardid) != null) {
             Statement statement = null;
@@ -221,4 +226,5 @@ public class Person {
         Person dbPerson = this.find(person.getCardid());
         return dbPerson.getCardid() == person.getCardid() && dbPerson.getPassword().equals(person.getPassword());
     }
+
 }

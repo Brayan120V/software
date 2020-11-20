@@ -218,6 +218,7 @@ public class Truck {
                 + "cardid, name, phone from truck, transporter, person "
                 + "where licenseplate = '" + licensePlate + "' "
                 + "and transporter_person_cardid = person_cardid "
+                + "and truck.status = 'active' "
                 + "and person_cardid = cardid;";
         try {
             connection = (Connection) connect.connect();
@@ -255,6 +256,7 @@ public class Truck {
                 + "cardid, name, phone from truck, transporter, person "
                 + "where transporter_person_cardid = " + cardid + " "
                 + "and transporter_person_cardid = person_cardid "
+                + "and truck.status = 'active' "
                 + "and person_cardid = cardid;";
         try {
             connection = (Connection) connect.connect();
